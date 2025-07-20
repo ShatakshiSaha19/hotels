@@ -41,29 +41,6 @@ router.get('/:tastes', async (req, res) => {
   }
 })
 
-//PUT method to update a menu item
-router.put('/:id', async (req, res) => {
-  try {
-    const personId = req.params.id; // Extract the ID from the URL parameter
-    const updatedPersonData = req.body; // Get the updated data from the request body
 
-    const response = await MenuItem.findByIdAndUpdate(personId, updatedPersonData, {
-      new: true,//return the updated document
-      runValidators: true //run mongoose validation
-    });
-    if (!response) {
-      return res.status(404).json({
-        error: 'Person not found'
-      });// If no menu item is found with the given ID, return a 404 error
-    }
-
-    console.log('data updated');
-    res.status(200).json(response); // Send the updated menu item as a response
-
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: 'Failed to update menu item' }); // Handle errors
-  }
-})
 
 module.exports = router;
