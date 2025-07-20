@@ -74,8 +74,8 @@
 const express = require('express')
 const app = express()
 const db = require('./db.js'); // Import the database connection....this should be at the top of the file to ensure the database is connected before handling requests
-
-
+//require('dotenv').config(); // Load environment variables from .env file
+const PORT = process.env.PORT || 3000; // Use the port from environment variables(provided by online hosting platform) or default to 3000(localhost)
 
 const bodyParser = require('body-parser');
  app.use(bodyParser.json())//req.body
@@ -114,6 +114,8 @@ const menuItemRoutes = require('./routes/menuItemRoutes.js');
 app.use('/person', personRoutes); 
 
 app.use('/menu', menuItemRoutes); // Use the menu item routes
+
+
 
 app.listen(3000,()=>{
   console.log('Example app listening on port 3000!')
