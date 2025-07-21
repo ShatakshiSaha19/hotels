@@ -1,28 +1,43 @@
-const mongoose =require('mongoose');
+const mongoose = require('mongoose');
 require('dotenv').config(); 
 
-//Define  the MongoDB connection URL
-//const mongoURL ='mongodb://localhost:27017/hotels'//replace "mydatabase" with your database name
-//Set up the connection to MongoDB
+// Get the MongoDB URL from environment variables
+const mongoURL = process.env.MONGODB_URL;
 
- const mongoURL =process.env.MONGODB_URL;
-mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
+if (!mongoURL) {
+  console.error('❌ MONGODB_URL is not defined in .env file');
+  process.exit(1); // Stop the app if no DB URL is provided
+}
 
-//Get the default connection
-//mongoose maintains a default connection object representing the mongoDB connection
-const db=mongoose.connection;
+// Connect to MongoDB with SSL enforced
+mongoose.connect(mongoURL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  ssl: true, // ✅ Ensure TLS is used (needed for Atlas)
+});
 
-//Define event listeners for the database connection
+// Get the default connection
+const db = mongoose.connection;
 
+// Define event listeners for the database connection
 db.on('connected', () => {
-  console.log('Connected to MongoDB');
-});
-db.on('error', (err) => {
-  console.error('Error connecting to MongoDB:', err);
-});
-db.on('disconnected', () => {
-  console.log('Disconnected from MongoDB');
+  console.log('✅ Connected to MongoDB');
 });
 
-//Export the database connection
+db.on('error', (err) => {
+  console.error('❌ Error connecting to MongoDB:', err.message);
+});
+
+db.on('disconnected', () => {
+  console.log('⚠️ Disconnected from MongoDB');
+});
+
+// Optional: Handle app termination
+process.on('SIGINT', async () => {
+  await mongoose.connection.close();
+  console.log('🔌 MongoDB connection closed due to app termination');
+  process.exit(0);
+});
+
+// Export the database connection
 module.exports = db;
